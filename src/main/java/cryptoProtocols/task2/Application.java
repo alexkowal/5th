@@ -1,5 +1,10 @@
 package cryptoProtocols.task2;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -144,6 +149,27 @@ public class Application {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        ElGamalSign elGamal = new ElGamalSign();
+        String inputMode;
+        System.out.println("Выберите режим: 1 - подписать текст, 2 - проверить подпись, 3 - прочитать скрытое сообщение");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        inputMode = br.readLine();
+        switch (inputMode) {
+            case ("1"):
+                while (true)
+                    try {
+                        elGamal.sign();
+                        break;
+                    } catch (Exception e) {
+                    }
+                break;
+            case ("2"):
+                elGamal.checkSign();
+                break;
+            case ("3"):
+                elGamal.decryptSecretText();
+                break;
+        }
     }
 }

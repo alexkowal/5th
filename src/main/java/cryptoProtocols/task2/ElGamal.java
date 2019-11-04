@@ -5,9 +5,13 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.*;
 
+import static java.math.BigInteger.ONE;
+
 
 public class ElGamal {
     private static final String TEXT_TO_ENCRYPT = "/Users/aleksandr/5 курс 1 семестр/Криптографические протоколы/task 2/text-to-encrypt.txt";
+    private static final String SECRET_TEXT = "/Users/aleksandr/5 курс 1 семестр/Криптографические протоколы/task 2/secret-text.txt";
+
     private static final String COMMON_PARAMETERS_FILE_PATH = "/Users/aleksandr/5 курс 1 семестр/Криптографические протоколы/task 2/common-parameters.txt";
     private static final String CYPHER_FILE_PATH = "/Users/aleksandr/5 курс 1 семестр/Криптографические протоколы/task 2/cypher.txt";
     private static final String PRIVATE_KEY = "/Users/aleksandr/5 курс 1 семестр/Криптографические протоколы/task 2/private-key.txt";
@@ -18,6 +22,7 @@ public class ElGamal {
     private static Map<Long, Character> alphRevert = new TreeMap<>();
 
     private String text;
+    private String secretText;
 
     public ElGamal() throws FileNotFoundException {
         this.bufferedReader = new BufferedReader(new FileReader(TEXT_TO_ENCRYPT));
@@ -179,7 +184,11 @@ public class ElGamal {
             case ("3"):
                 elGamal.generateParameters();
                 break;
+            case ("4"):
+                elGamal.sign();
+                break;
         }
+
     }
 
 
@@ -193,14 +202,26 @@ public class ElGamal {
         return text;
     }
 
+    private String readSecretText() throws IOException {
+        bufferedReader = new BufferedReader(new FileReader(TEXT_TO_ENCRYPT));
+        String text = "";
+        String s;
+        while ((s = bufferedReader.readLine()) != null) {
+            text = text.concat(s);
+        }
+        this.secretText = text;
+        return text;
+    }
+
+
     private void generateParameters() throws IOException {
         BigInteger p, g, x;
         Random sc = new SecureRandom();
         p = BigInteger.probablePrime(20, sc);
         g = p.multiply(BigInteger.valueOf((long) (Math.random() * p.longValue())))
-                .mod(p.subtract(BigInteger.ONE));
+                .mod(p.subtract(ONE));
         x = p.multiply(BigInteger.valueOf((long) (Math.random() * p.longValue())))
-                .mod(p.subtract(BigInteger.ONE));
+                .mod(p.subtract(ONE));
         BigInteger y = g.modPow(x, p);
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(COMMON_PARAMETERS_FILE_PATH))) {
@@ -264,8 +285,44 @@ public class ElGamal {
             while ((tmp = bufferedReader.readLine()) != null) {
                 BigInteger a = new BigInteger(tmp);
                 BigInteger b = new BigInteger(bufferedReader.readLine());
-                long M = b.multiply(a.modPow(p.subtract(BigInteger.ONE).subtract(x), p)).mod(p).longValue();
+                long M = b.multiply(a.modPow(p.subtract(ONE).subtract(x), p)).mod(p).longValue();
                 bufferedWriter.write(alphRevert.get(M).toString());
+            }
+        }
+    }
+
+
+    private void sign() throws IOException {
+        readText();
+        readSecretText();
+        this.bufferedReader = new BufferedReader(new FileReader(COMMON_PARAMETERS_FILE_PATH));
+        BigInteger y = new BigInteger(bufferedReader.readLine());
+        BigInteger g = new BigInteger(bufferedReader.readLine());
+        BigInteger p = new BigInteger(bufferedReader.readLine());
+        this.bufferedReader = new BufferedReader(new FileReader(PRIVATE_KEY));
+        BigInteger x = new BigInteger(bufferedReader.readLine());
+
+        BigInteger k = g.modPow(x, p);
+
+
+        List<String> textAsDigits = new ArrayList<>();
+        for (int i = 0; i < this.secretText.length(); i++) {
+            long tmp = alph.get(secretText.charAt(i));
+            textAsDigits.add(String.valueOf(tmp));
+        }
+        long M;
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(CYPHER_FILE_PATH))) {
+            for (String textAsDigit : textAsDigits) {
+                M = Long.parseLong(textAsDigit);
+                BigInteger a = g.modPow(k, p);
+                BigInteger b = BigInteger.valueOf(M).subtract(x.multiply(a)).multiply(k.modInverse(p.subtract(ONE))).mod(p.subtract(ONE));
+
+
+                BigInteger tmp = y.modPow(a, p).multiply(a.modPow(b, p)).mod(p);
+//
+//  M = (Y–1 (M' – rX)) mod (p – 1).
+                BigInteger t = tmp.subtract(x.multiply(a)).multiply(y.modInverse(p)).mod(p);
+                System.out.println(t.toString());
             }
         }
     }
