@@ -150,7 +150,7 @@ public class Application {
     }
 
     public static void main(String[] args) throws Exception {
-        ElGamalSign elGamal = new ElGamalSign();
+        Test elGamal = new Test();
         String inputMode;
         System.out.println("Выберите режим: 1 - подписать текст, 2 - проверить подпись, 3 - прочитать скрытое сообщение");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

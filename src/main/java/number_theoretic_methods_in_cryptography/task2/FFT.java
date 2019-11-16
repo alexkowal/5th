@@ -6,9 +6,7 @@ import org.apache.commons.math3.complex.Complex;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
+import static java.lang.Math.*;
 
 public class FFT {
 
@@ -48,30 +46,61 @@ public class FFT {
         return a;
     }
 
-//    typedef complex<double> base;
-//
-//    void fft (vector<base> & a, bool invert) {
-//        int n = (int) a.size();
-//        if (n == 1)  return;
-//
-//        vector<base> a0 (n/2),  a1 (n/2);
-//        for (int i=0, j=0; i<n; i+=2, ++j) {
-//            a0[j] = a[i];
-//            a1[j] = a[i+1];
-//        }
-//        fft (a0, invert);
-//        fft (a1, invert);
-//
-//        double ang = 2*PI/n * (invert ? -1 : 1);
-//        base w (1),  wn (cos(ang), sin(ang));
-//        for (int i=0; i<n/2; ++i) {
-//            a[i] = a0[i] + w * a1[i];
-//            a[i+n/2] = a0[i] - w * a1[i];
-//            if (invert)
-//                a[i] /= 2,  a[i+n/2] /= 2;
-//            w *= wn;
-//        }
-//    }
+
+    public static List<Long> multiply(List<Complex> a, List<Complex> b) {
+        List<Complex> fa = Lists.newArrayList(a);
+        List<Complex> fb = Lists.newArrayList(b);
+        int count = fa.size() - 1 + fb.size() - 1;
+        long n = 1;
+        while (n < max(a.size(), b.size()))
+            n *= 2;
+        n *= 2;
+        while (fa.size() != n)
+            fa.add(new Complex(0));
+        while (fb.size() != n)
+            fb.add(new Complex(0));
+        fa = fft(fa, false);
+        fb = fft(fb, false);
+        for (int i = 0; i < n; i++)
+            fa.set(i, fa.get(i).multiply(fb.get(i)));
+        fa = fft(fa, true);
+
+        List<Long> result = Lists.newArrayList();
+        for (int i = 0; i <= count; i++) {
+            result.add((long) (fa.get(i).getReal() + 0.5));
+        }
+        return result;
+    }
+
+    public static List<Long> transport(List<Long> res) {
+        List<Long> tmp = Lists.reverse(res);
+        long carry = 0;
+
+        for (int i = 0; i < tmp.size() - 1; i++) {
+            if (carry != 0)
+                tmp.set(i, tmp.get(i) + carry);
+            if (tmp.get(i) > 9) {
+                carry = tmp.get(i) / 10;
+                tmp.set(i, tmp.get(i) % 10);
+            }else carry=0;
+        }
+        tmp.set(tmp.size() - 1, tmp.get(tmp.size() - 1) + carry);
+        return Lists.reverse(tmp);
+    }
 
 
+    public static List<Complex> digitAsList(Long d) {
+        List<Complex> res = Lists.newArrayList();
+        while (d > 0) {
+            res.add(new Complex(d % 10));
+            d /= 10;
+        }
+        return Lists.reverse(res);
+    }
+
+    public static void printDigit(List<Long> list) {
+        for (Long aLong : list) {
+            System.out.print(aLong);
+        }
+    }
 }
