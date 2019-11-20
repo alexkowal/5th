@@ -1,40 +1,43 @@
 package algebraicMethods.task1;
 
 import javafx.util.Pair;
+import lombok.Data;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Data
 public class Help {
     private static final BigInteger TWO = new BigInteger("2");
     private static final BigInteger THREE = new BigInteger("3");
     private static final BigInteger FOUR = new BigInteger("4");
     private static final BigInteger FIVE = new BigInteger("5");
     private static final BigInteger EIGHT = new BigInteger("8");
-    public static final int k = 1000;
+    public static int  k = 1000000;
 
     public static BigInteger jacobi(BigInteger a, BigInteger b) {
 
         if (!a.gcd(b).equals(BigInteger.ONE)) return BigInteger.ZERO;
         BigInteger r = BigInteger.ONE;
 
-        if (a.compareTo(BigInteger.ZERO) == -1){
+        if (a.compareTo(BigInteger.ZERO) == -1) {
             a = a.negate();
-            if (b.mod(FOUR).equals(THREE)){
+            if (b.mod(FOUR).equals(THREE)) {
                 r = r.negate();
             }
         }
 
         while (!a.equals(BigInteger.ZERO)) {
             BigInteger t = BigInteger.ZERO;
-            while (a.mod(TWO).equals(BigInteger.ZERO)){
+            while (a.mod(TWO).equals(BigInteger.ZERO)) {
                 t = t.add(BigInteger.ONE);
-                a  = a.divide(TWO);
+                a = a.divide(TWO);
             }
 
             if (!t.mod(TWO).equals(BigInteger.ZERO)) {
@@ -133,7 +136,7 @@ public class Help {
                     break;
                 }
             }
-            BigInteger b = c.modPow(BigInteger.valueOf((int)Math.pow(2, m.intValue() - i.intValue() - 1)), p);
+            BigInteger b = c.modPow(BigInteger.valueOf((int) Math.pow(2, m.intValue() - i.intValue() - 1)), p);
             r = r.multiply(b).mod(p);
             t = t.multiply(b.pow(2)).mod(p);
             c = b.pow(2).mod(p);
@@ -145,12 +148,10 @@ public class Help {
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Params.txt"))) {
             String s = "Простое число p = " + p + "\n" +
-                    "Коэффицент B = " + b + "\n" +
                     "Образующая точка Q = (" + q.getKey() + ", " + q.getValue() + ")" +
                     " простого порядка r = " + r + "\n";
             bufferedWriter.write(s);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Ошибка записи!");
         }
     }
@@ -168,12 +169,11 @@ public class Help {
                 point = EllipticCurve.summ(point, q, p);
             }
 
-            for (Pair<BigInteger, BigInteger> xy: points) {
-                    bufferedWriter1.write(xy.getKey() + "\n");
-                    bufferedWriter2.write(xy.getValue() + "\n");
+            for (Pair<BigInteger, BigInteger> xy : points) {
+                bufferedWriter1.write(xy.getKey() + "\n");
+                bufferedWriter2.write(xy.getValue() + "\n");
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Ошибка записи!");
         }
     }
@@ -192,19 +192,23 @@ public class Help {
         return primeNumberBit;
     }
 
-    public static BigInteger generatePrime(int l) {
-        BigInteger mod = BigInteger.ONE;
-        for (int i = 0; i < l; i++)
-            mod = mod.multiply(TWO);
+    public BigInteger generatePrime(int l) {
+        if (l <= 10)
+            k = 10000;
+        return BigInteger.probablePrime(l, new SecureRandom());
 
-        BigInteger number = BigInteger.valueOf(0);
-        BigInteger deg = TWO.modPow(BigInteger.valueOf(l - 1), mod);
-        int primeNumberBit[] = generateBits(l);
-
-        for (int i = 0; i < l; i++) {
-            number = number.add(deg.multiply(BigInteger.valueOf(primeNumberBit[i])));
-            deg = deg.divide(TWO);
-        }
-        return number;
+//        BigInteger mod = BigInteger.ONE;
+//        for (int i = 0; i < l; i++)
+//            mod = mod.multiply(TWO);
+//
+//        BigInteger number = BigInteger.valueOf(0);
+//        BigInteger deg = TWO.modPow(BigInteger.valueOf(l - 1), mod);
+//        int primeNumberBit[] = generateBits(l);
+//
+//        for (int i = 0; i < l; i++) {
+//            number = number.add(deg.multiply(BigInteger.valueOf(primeNumberBit[i])));
+//            deg = deg.divide(TWO);
+//        }
+//        return number;
     }
 }

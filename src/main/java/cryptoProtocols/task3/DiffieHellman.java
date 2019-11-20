@@ -131,7 +131,7 @@ public class DiffieHellman {
 
         while (!p.isProbablePrime(200)) {
 
-            q = new BigInteger(10, sc);
+            q = new BigInteger(3, sc);
             for (int k = 0; k < q.longValue(); k++) {
                 p = new BigInteger("2").pow(k).multiply(q).add(ONE);
                 if (p.isProbablePrime(200))

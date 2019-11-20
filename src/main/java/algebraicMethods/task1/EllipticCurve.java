@@ -12,26 +12,26 @@ public class EllipticCurve {
     private static final BigInteger TWO = new BigInteger("2");
     private static final BigInteger THREE = new BigInteger("3");
     private static final BigInteger FOUR = new BigInteger("4");
-
-    private static final BigInteger SIX = new BigInteger("6");
     private BigInteger bs;
     private BigInteger p;
     private BigInteger N;
     private BigInteger r;
-    private BigInteger a;
+    private static BigInteger a = BigInteger.ONE;
     private BigInteger b;
     private Pair<BigInteger, BigInteger> q;
     private BigInteger x0;
     private BigInteger y0;
     private int L;
+    Help help = new Help();
+
 
     public void findP(int L) {
         this.L = L;
         BigInteger p;
         do {
-            p = Help.generatePrime(L);
+            p = help.generatePrime(L);
         }
-        while (!Help.isPrime(p, L, 200) || p.toString(2).toCharArray()[0] != '1' || !p.mod(FOUR).equals(BigInteger.ONE));
+        while (!Help.isPrime(p, L, 20) || p.toString(2).toCharArray()[0] != '1' || !p.mod(FOUR).equals(BigInteger.ONE));
         this.p = p;
     }
 
@@ -105,7 +105,6 @@ public class EllipticCurve {
     }
 
     public boolean verify() {
-
         List<BigInteger> T = new ArrayList<>();
         T.add(a.multiply(new BigInteger("2")));
         T.add(b.multiply(new BigInteger("2")));
@@ -116,22 +115,18 @@ public class EllipticCurve {
         BigInteger N;
         for (BigInteger t : T) {
             N = p.add(BigInteger.ONE).add(t);
-            if (N.isProbablePrime(200)) {
-                BigInteger r = N;
-                this.N = N;
-                this.r = r;
-                return true;
-            }
-            if (N.mod(TWO).equals(BigInteger.ZERO)
-                    && N.divide(TWO).isProbablePrime(200)) {
-                BigInteger r = N.divide(TWO);
-                this.N = N;
-                this.r = r;
-                return true;
-            }
+
             if (N.mod(FOUR).equals(BigInteger.ZERO)
-                    && N.divide(FOUR).isProbablePrime(200)) {
+                    && N.divide(FOUR).isProbablePrime(20)) {
                 BigInteger r = N.divide(FOUR);
+                this.N = N;
+                this.r = r;
+                return true;
+            }
+
+            if (N.mod(TWO).equals(BigInteger.ZERO)
+                    && N.divide(TWO).isProbablePrime(20)) {
+                BigInteger r = N.divide(TWO);
                 this.N = N;
                 this.r = r;
                 return true;
@@ -141,7 +136,7 @@ public class EllipticCurve {
     }
 
     public boolean check(int m) {
-        if (L == 4 || L == 6) {
+        if (L == 4) {
             return true;
         }
         if (p.equals(r)) {
@@ -158,12 +153,10 @@ public class EllipticCurve {
     public static boolean isQuad(BigInteger a, BigInteger p, BigInteger N) {
         return N.modPow(TWO, p).equals(a);
     }
+    //A^(p-1)/2==1 (mod p)
 
     public boolean generate() {
-
         int l = p.bitLength();
-
-
         BigInteger x0;
         BigInteger y0;
 
@@ -176,7 +169,6 @@ public class EllipticCurve {
 
         BigInteger xInverse = x0.modInverse(p);
         BigInteger a = y0.pow(2).subtract(x0.pow(3)).multiply(xInverse).mod(p);
-
 
         if (r.multiply(TWO).equals(N) && isQuad(p.subtract(a), p, N)) {
             this.bs = a;
@@ -195,14 +187,13 @@ public class EllipticCurve {
     }
 
     public boolean checkXY() {
-
         Pair<BigInteger, BigInteger> point = new Pair<>(x0, y0);
 
         for (BigInteger i = BigInteger.ONE; i.compareTo(N.subtract(BigInteger.ONE)) < 0; i = i.add(BigInteger.ONE)) {
             point = summ(point, new Pair<>(x0, y0), p);
 
             if (point == null) {
-                System.out.println(N.toString() + " " + i.toString());
+//                System.out.println(N.toString() + " " + i.toString());
                 return false;
             }
         }
@@ -226,7 +217,7 @@ public class EllipticCurve {
                 if (y1.equals(BigInteger.ZERO)) {
                     return null;
                 } else {
-                    l = x1.pow(2).multiply(THREE).multiply((TWO.multiply(y1)).modInverse(p)).mod(p);
+                    l = x1.pow(2).multiply(THREE).add(a).multiply((TWO.multiply(y1)).modInverse(p)).mod(p);
                 }
             } else {
                 l = (y2.subtract(y1)).multiply((x2.subtract(x1)).modInverse(p)).mod(p);
@@ -266,8 +257,8 @@ public class EllipticCurve {
     }
 
     public Pair<BigInteger, BigInteger> generateXY(int l) {
-        BigInteger x0 = new BigInteger(new Random().nextInt(l + 1) + l / 2 + 1, 200, new SecureRandom()).mod(p);
-        BigInteger y0 = new BigInteger(new Random().nextInt(l + 1) + l / 2 + 1, 200, new SecureRandom()).mod(p);
+        BigInteger x0 = new BigInteger(new Random().nextInt(l + 1) + l / 2 + 1, 20, new SecureRandom()).mod(p);
+        BigInteger y0 = new BigInteger(new Random().nextInt(l + 1) + l / 2 + 1, 20, new SecureRandom()).mod(p);
         return new Pair<>(x0, y0);
     }
 
