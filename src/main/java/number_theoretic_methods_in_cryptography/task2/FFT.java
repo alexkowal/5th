@@ -35,7 +35,6 @@ public class FFT {
 
         for (int i = 0; i < n / 2; ++i) {
             a.set(i, a0.get(i).add(w.multiply(a1.get(i))));
-
             a.set(i + n / 2, a0.get(i).subtract(w.multiply(a1.get(i))));
             if (invert) {
                 a.set(i, a.get(i).divide(2));
