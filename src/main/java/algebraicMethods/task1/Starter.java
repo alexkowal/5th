@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static java.math.BigInteger.ONE;
-
 public class Starter {
     public void start() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -25,11 +23,11 @@ public class Starter {
             return;
         }
         List<Task> t = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 15; i++) {
             t.add(new Task(L));
 
         }
-        ThreadPoolExecutor tt = new ScheduledThreadPoolExecutor(100);
+        ThreadPoolExecutor tt = new ScheduledThreadPoolExecutor(50);
         for (Task task : t) {
             tt.submit(task);
         }

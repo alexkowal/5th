@@ -37,8 +37,6 @@ public class Application {
         System.out.println("Время выполнения обратного преобразования: " + f);
         System.out.println();
 
-
-
         //Умножение 2 чисел
         System.out.println();
         startTime = System.currentTimeMillis();
