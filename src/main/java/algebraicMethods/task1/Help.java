@@ -144,7 +144,7 @@ public class Help {
         }
     }
 
-    public static void printParams(BigInteger p, Pair<BigInteger, BigInteger> q, BigInteger r, BigInteger b) {
+    public synchronized static void printParams(BigInteger p, Pair<BigInteger, BigInteger> q, BigInteger r, BigInteger b) {
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Params.txt"))) {
             String s = "Простое число p = " + p + "\n" +
@@ -156,7 +156,7 @@ public class Help {
         }
     }
 
-    public static void printPoints(Pair<BigInteger, BigInteger> q, BigInteger p, BigInteger r) {
+    public synchronized static void  printPoints(Pair<BigInteger, BigInteger> q, BigInteger p, BigInteger r) {
         try (BufferedWriter bufferedWriter1 = new BufferedWriter(new FileWriter("X.txt"));
              BufferedWriter bufferedWriter2 = new BufferedWriter(new FileWriter("Y.txt"))) {
 

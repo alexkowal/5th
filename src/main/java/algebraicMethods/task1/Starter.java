@@ -18,12 +18,12 @@ public class Starter {
             return;
         }
         int L = Integer.parseInt(s1);
-        if (L <= 4) {
+        if (L <= 5) {
             System.out.println("Ошибка! Число бит должно быть > 4 и != 5");
             return;
         }
         List<Task> t = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 1; i++) {
             t.add(new Task(L));
 
         }

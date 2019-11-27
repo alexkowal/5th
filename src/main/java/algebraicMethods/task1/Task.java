@@ -15,7 +15,6 @@ class Task implements Runnable {
             EllipticCurve ellipticCurve = new EllipticCurve();
             while (true) {
                 ellipticCurve.findP(L);
-                System.out.println("P = " + ellipticCurve.getP());
                 if (!ellipticCurve.faction(ONE)) continue; // проблема тут?
                 if (ellipticCurve.verify() && ellipticCurve.check(5)) break;
             }

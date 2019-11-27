@@ -12,6 +12,9 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Starter starter = new Starter();
         starter.start();
+
+
+
        /* BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Введите L - количество бит");
         String s1 = reader.readLine();

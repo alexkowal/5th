@@ -150,10 +150,18 @@ public class EllipticCurve {
         return true;
     }
 
-    public static boolean isQuad(BigInteger a, BigInteger p, BigInteger N) {
-        return N.modPow(TWO, p).equals(a);
+
+    static boolean isQuad(BigInteger a, BigInteger p, boolean not) {
+        BigInteger check;
+        BigInteger ONE = BigInteger.valueOf(1);
+        BigInteger TWO = BigInteger.valueOf(2);
+        check = a.modPow((p.subtract(ONE)).divide(TWO), p);
+        if (!not && check.toString().equals("1"))
+            return true;
+        if (not && check.compareTo(p.subtract(BigInteger.ONE)) == 0)
+            return true;
+        return false;
     }
-    //A^(p-1)/2==1 (mod p)
 
     public boolean generate() {
         int l = p.bitLength();
@@ -170,14 +178,14 @@ public class EllipticCurve {
         BigInteger xInverse = x0.modInverse(p);
         BigInteger a = y0.pow(2).subtract(x0.pow(3)).multiply(xInverse).mod(p);
 
-        if (r.multiply(TWO).equals(N) && isQuad(p.subtract(a), p, N)) {
+        if (r.multiply(TWO).equals(N) && isQuad(a.negate(),p,false)){
             this.bs = a;
             this.x0 = x0;
             this.y0 = y0;
             return true;
         }
-
-        if (r.multiply(FOUR).equals(N) && isQuad(p.subtract(a), p, N)) {
+;
+        if (r.multiply(FOUR).equals(N) && isQuad(a.negate(),p,true)){
             this.bs = a;
             this.x0 = x0;
             this.y0 = y0;
@@ -191,9 +199,7 @@ public class EllipticCurve {
 
         for (BigInteger i = BigInteger.ONE; i.compareTo(N.subtract(BigInteger.ONE)) < 0; i = i.add(BigInteger.ONE)) {
             point = summ(point, new Pair<>(x0, y0), p);
-
             if (point == null) {
-//                System.out.println(N.toString() + " " + i.toString());
                 return false;
             }
         }
