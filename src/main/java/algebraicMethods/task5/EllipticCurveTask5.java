@@ -48,6 +48,7 @@ public class EllipticCurveTask5 {
     }
 
     public static void main(String[] args) throws IOException {
+        // Страница 324
         System.out.println("Введите число k для вычисления значения функции h(k)");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Long k = Long.valueOf(br.readLine());
