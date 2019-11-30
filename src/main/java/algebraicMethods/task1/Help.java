@@ -1,5 +1,6 @@
 package algebraicMethods.task1;
 
+import com.google.common.collect.Lists;
 import javafx.util.Pair;
 import lombok.Data;
 
@@ -11,6 +12,8 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static java.math.BigInteger.ONE;
 
 @Data
 public class Help {
@@ -211,4 +214,37 @@ public class Help {
 //        }
 //        return number;
     }
+
+    public static ArrayList<Object> generateEllipticCurve(int L) {
+        EllipticCurve ellipticCurve = new EllipticCurve();
+        while (true) {
+            while (true) {
+                ellipticCurve.findP(L);
+                if (!ellipticCurve.faction(ONE)) continue; // проблема тут?
+                if (ellipticCurve.verify() && ellipticCurve.check(5)) break;
+            }
+
+            int k = 0;
+            boolean f = false;
+
+            while (true) {
+                if (k++ == Help.k) {
+                    f = true;
+                    break;
+                }
+                if (!ellipticCurve.generate()) continue;
+                if (ellipticCurve.checkXY()) {
+                    ellipticCurve.generateQ();
+                    break;
+                }
+            }
+
+            if (!f) {
+                Help.printPoints(ellipticCurve.getQ(), ellipticCurve.getP(), ellipticCurve.getR());
+                Help.printParams(ellipticCurve.getP(), ellipticCurve.getQ(), ellipticCurve.getR(), ellipticCurve.getBs());
+                return Lists.newArrayList(ellipticCurve.getQ(), ellipticCurve.getP());
+            }
+        }
+    }
+
 }

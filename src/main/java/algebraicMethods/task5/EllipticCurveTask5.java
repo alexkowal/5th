@@ -1,8 +1,5 @@
 package algebraicMethods.task5;
 
-import algebraicMethods.task1.EllipticCurve;
-import algebraicMethods.task1.Help;
-import com.google.common.collect.Lists;
 import javafx.util.Pair;
 
 import java.io.BufferedReader;
@@ -12,40 +9,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import static algebraicMethods.task1.EllipticCurve.summ;
-import static java.math.BigInteger.ONE;
+import static algebraicMethods.task1.Help.generateEllipticCurve;
 
 public class EllipticCurveTask5 {
-    private static ArrayList<Object> generateEllipticCurve(int L) {
-        EllipticCurve ellipticCurve = new EllipticCurve();
-        while (true) {
-            while (true) {
-                ellipticCurve.findP(L);
-                if (!ellipticCurve.faction(ONE)) continue; // проблема тут?
-                if (ellipticCurve.verify() && ellipticCurve.check(5)) break;
-            }
-
-            int k = 0;
-            boolean f = false;
-
-            while (true) {
-                if (k++ == Help.k) {
-                    f = true;
-                    break;
-                }
-                if (!ellipticCurve.generate()) continue;
-                if (ellipticCurve.checkXY()) {
-                    ellipticCurve.generateQ();
-                    break;
-                }
-            }
-
-            if (!f) {
-                Help.printPoints(ellipticCurve.getQ(), ellipticCurve.getP(), ellipticCurve.getR());
-                Help.printParams(ellipticCurve.getP(), ellipticCurve.getQ(), ellipticCurve.getR(), ellipticCurve.getBs());
-                return Lists.newArrayList(ellipticCurve.getQ(), ellipticCurve.getP());
-            }
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         // Страница 324
