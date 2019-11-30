@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static java.math.BigInteger.ONE;
+
 public class Starter {
     public void start() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -22,38 +24,34 @@ public class Starter {
             System.out.println("Ошибка! Число бит должно быть > 4 и != 5");
             return;
         }
-        List<Task> t = new ArrayList<>();
-        for (int i = 0; i < 1; i++) {
-            t.add(new Task(L));
-
-        }
-        ThreadPoolExecutor tt = new ScheduledThreadPoolExecutor(50);
-        for (Task task : t) {
-            tt.submit(task);
-        }
-/*
-
-
         EllipticCurve ellipticCurve = new EllipticCurve();
         while (true) {
             ellipticCurve.findP(L);
-            System.out.println("P = " + ellipticCurve.getP());
             if (!ellipticCurve.faction(ONE)) continue; // проблема тут?
             if (ellipticCurve.verify() && ellipticCurve.check(5)) break;
         }
+
         int k = 0;
+        boolean f = false;
 
-        List<Task> t = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            t.add(new Task(L));
-
+        while (true) {
+            if (k++ == Help.k) {
+                f = true;
+                break;
+            }
+            if (!ellipticCurve.generate()) continue;
+            if (ellipticCurve.checkXY()) {
+                ellipticCurve.generateQ();
+                break;
+            }
         }
-        ThreadPoolExecutor tt = new ScheduledThreadPoolExecutor(100);
-        for (Task task : t) {
-            tt.submit(task);
+
+        if (!f) {
+            Help.printPoints(ellipticCurve.getQ(), ellipticCurve.getP(), ellipticCurve.getR());
+            Help.printParams(ellipticCurve.getP(), ellipticCurve.getQ(), ellipticCurve.getR(), ellipticCurve.getBs());
+            System.exit(0);
         }
 
-*/
     }
 
     static boolean isNumber(String s) {
