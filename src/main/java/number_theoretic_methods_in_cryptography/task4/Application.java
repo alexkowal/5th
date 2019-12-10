@@ -9,7 +9,7 @@ public class Application {
         long start;
         long time;
 
-        long n = 12331;
+        long n = 12312;
         long res;
         PollardP p = new PollardP(n, 123);
         PollardP_1 p_1 = new PollardP_1(n);

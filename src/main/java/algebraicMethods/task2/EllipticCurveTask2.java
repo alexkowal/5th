@@ -16,23 +16,51 @@ public class EllipticCurveTask2 {
 
     public static void main(String[] args) throws IOException {
         EllipticCurveTask2 ellipticCurveTask2 = new EllipticCurveTask2();
-        ellipticCurveTask2.generateCommonParameters(6);
+        while (true) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Выберите шаг алгоритма: " +
+                    "\n1 - Сгенерировать общие параметры" +
+                    "\n2 - Алиса: Сгенерировать случайное число a и отправить aQ " +
+                    "\n3 - Боб: Сгенерировать случайное число b и отправить bQ " +
+                    "\n4 - Алиса: Умножить точку bQ на a" +
+                    "\n5 - Боб: Умножить точку aQ на b");
 
-        ellipticCurveTask2.generateRandomDigitAndSend("Alice");
-        ellipticCurveTask2.generateRandomDigitAndSend("Bob");
-        ellipticCurveTask2.readPointAndMultiplyWithMyRandomNumber("Bob", "Alice");
-        ellipticCurveTask2.readPointAndMultiplyWithMyRandomNumber("Alice", "Bob");
-
+            Integer step = Integer.valueOf(br.readLine());
+            if (step == 1) {
+                System.out.println("Введите l");
+                int l = Integer.parseInt(br.readLine());
+                ellipticCurveTask2.generateCommonParameters(l);
+                System.out.println("Параметры сгенерированы");
+            }
+            if (step == 2) {
+                ellipticCurveTask2.generateRandomDigitAndSend("Alice");
+            }
+            if (step == 3) {
+                ellipticCurveTask2.generateRandomDigitAndSend("Bob");
+            }
+            if (step == 4) {
+                ellipticCurveTask2.readPointAndMultiplyWithMyRandomNumber("Bob", "Alice");
+            }
+            if (step == 5) {
+                ellipticCurveTask2.readPointAndMultiplyWithMyRandomNumber("Alice", "Bob");
+            }
+        }
     }
 
 
     private void generateCommonParameters(int l) throws IOException {
         List<Object> parameters = generateEllipticCurve(l);
+
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("commonParameters.txt"));
-        bufferedWriter.write(String.valueOf(parameters.get(0)));
-        bufferedWriter.newLine();
-        bufferedWriter.write(String.valueOf(parameters.get(1)));
-        bufferedWriter.close();
+        try {
+            bufferedWriter.write(String.valueOf(parameters.get(0)));
+            bufferedWriter.newLine();
+            bufferedWriter.write(String.valueOf(parameters.get(1)));
+            bufferedWriter.close();
+        } finally {
+            bufferedWriter.close();
+        }
+
     }
 
     private void generateRandomDigitAndSend(String abonentName) throws IOException {
@@ -43,16 +71,22 @@ public class EllipticCurveTask2 {
         BigInteger p = new BigInteger(bufferedReader.readLine());
 
         Random r = new SecureRandom();
-        Integer random = Math.abs(r.nextInt(100));
+        Long random = Long.valueOf(Math.abs(r.nextInt((int) (p.longValue()))));
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(abonentName + "_randomNumber.txt"));
-        bufferedWriter.write(String.valueOf(random));
-        bufferedWriter.close();
-        System.out.println(random);
+        try {
+            bufferedWriter.write(String.valueOf(random));
+        } finally {
+            bufferedWriter.close();
+        }
+        System.out.println("Случайно сгенерированное число пользователем " + abonentName + " : " + random);
         for (int i = 0; i < random; i++)
             qPoint = summ(qPoint, qPoint, p);
         bufferedWriter = new BufferedWriter(new FileWriter(abonentName + ".txt"));
-        bufferedWriter.write(String.valueOf(qPoint));
-        bufferedWriter.close();
+        try {
+            bufferedWriter.write(String.valueOf(qPoint));
+        } finally {
+            bufferedWriter.close();
+        }
 
     }
 
@@ -70,8 +104,10 @@ public class EllipticCurveTask2 {
             point = summ(point, point, p);
         }
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(myName + "_key.txt"));
-        bufferedWriter.write(String.valueOf(point));
-        bufferedWriter.close();
-
+        try {
+            bufferedWriter.write(String.valueOf(point));
+        } finally {
+            bufferedWriter.close();
+        }
     }
 }

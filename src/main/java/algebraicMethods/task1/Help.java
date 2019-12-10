@@ -242,7 +242,7 @@ public class Help {
             if (!f) {
                 Help.printPoints(ellipticCurve.getQ(), ellipticCurve.getP(), ellipticCurve.getR());
                 Help.printParams(ellipticCurve.getP(), ellipticCurve.getQ(), ellipticCurve.getR(), ellipticCurve.getBs());
-                return Lists.newArrayList(ellipticCurve.getQ(), ellipticCurve.getP());
+                return Lists.newArrayList(ellipticCurve.getQ(), ellipticCurve.getP(), ellipticCurve.getR());
             }
         }
     }
