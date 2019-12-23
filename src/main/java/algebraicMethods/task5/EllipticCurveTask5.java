@@ -28,6 +28,11 @@ public class EllipticCurveTask5 {
                         ",где n - битность числа k");
             }
             if (step == 2) {
+                int max = defineCriteria();
+                System.out.println("(2 * n + 2) должно быть меньше или равно " + max + "" +
+                        ", где n -  битность числа k ");
+
+
                 System.out.println("Введите k:");
                 int k = Integer.parseInt(br.readLine());
                 calculateFunctionValue(k);
@@ -65,7 +70,7 @@ public class EllipticCurveTask5 {
         int max = defineCriteria();
         int n = Long.toBinaryString(k).length();
         if (2 * n + 2 > max) {
-            System.out.println("(2*n+2) должно быть меньше или равно " + max+"" +
+            System.out.println("(2*n+2) должно быть меньше или равно " + max + "" +
                     ",где n -  битность числа k ");
             return;
         }
@@ -76,19 +81,19 @@ public class EllipticCurveTask5 {
                 new Pair<>(new BigInteger(q.get(0)), new BigInteger(q.get(1)));
         BigInteger p = new BigInteger(bufferedReader.readLine());
         //kQ
-        System.out.println("Вычисляется kQ");
+//        System.out.println("Вычисляется kQ");
         for (int i = 0; i < k; i++) {
             qPoint = summ(qPoint, qPoint, p);
         }
 
         long module = getModule(n);
         //f(kQ(mod 2^n)
-        System.out.println("Вычисляется f(kQ(mod 2^n)");
+//        System.out.println("Вычисляется f(kQ(mod 2^n)");
         long e = qPoint.getKey().mod(BigInteger.valueOf(module)).longValue();
         long factor = module * k + e;
 
         //R = ((2^n*k + e)*Q)
-        System.out.println("Вычисляется R = ((2^n*k + e)*Q)");
+//        System.out.println("Вычисляется R = ((2^n*k + e)*Q)");
 
         Pair<BigInteger, BigInteger> r = qPoint;
         for (int i = 0; i < factor; i++)

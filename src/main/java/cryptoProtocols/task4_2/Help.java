@@ -18,23 +18,44 @@ public class Help {
     private static Map<Character, Integer> alph = new TreeMap<>();
     private static final String FILES_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/";
     private static List<String> card = Lists.newArrayList(
-            "двойка",
-            "тройка",
-            "четверка",
-            "пятерка",
-            "шестерка",
-            "семерка",
-            "восьмерка",
-            "девятка",
-            "десятка",
-            "валет",
-            "дама",
-            "король",
-            "туз");
-    private static List<String> mast = Lists.newArrayList("буби",
-            "черви",
-            "крести",
-            "пики");
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+            "jack",
+            "queen",
+            "king",
+            "ace");
+//    private static List<String> card = Lists.newArrayList(
+//            "двойка",
+//            "тройка",
+//            "четверка",
+//            "пятерка",
+//            "шестерка",
+//            "семерка",
+//            "восьмерка",
+//            "девятка",
+//            "десятка",
+//            "валет",
+//            "дама",
+//            "король",
+//            "туз");
+
+//    private static List<String> mast = Lists.newArrayList("буби",
+//            "черви",
+//            "крести",
+//            "пики");
+
+    private static List<String> mast = Lists.newArrayList("diamond",
+            "heart",
+            "club",
+            "spade");
+
 
     static {
         alph.put('0', 18);

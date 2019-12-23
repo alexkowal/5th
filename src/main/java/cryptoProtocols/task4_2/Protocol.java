@@ -1,7 +1,6 @@
 package cryptoProtocols.task4_2;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -16,16 +15,9 @@ public class Protocol {
     private static final String CAROLS_PAIR_FILE = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/Carol.txt";
     public static final String BASE_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/";
     public static final String DECK_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/deck/";
-    private static final String BOB_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/b/";
-    private static final String ALICE_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/a/";
-    private static final String CAROL_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/c/";
 
 
     public static void main(String[] args) throws IOException {
-
-        BigInteger s = readFileAsBytes(new File("/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/b/1.txt"));
-        System.out.println(s);
-        writeBytesAsString(s);
         System.out.println("Выберите команду:" +
                 "\n1 - Сгенерировать общее p - БПЧ" +
                 "\n2 - Сгенерировать пары ключей для Алисы, Боба и Кэрол" +
@@ -35,8 +27,7 @@ public class Protocol {
                 "\n6 - Зашифровать n карт" +
                 "\n7 - Расшифровать n карт" +
                 "\n8 - Сгенерировать колоду" +
-                "\n9 - Передать колоду" +
-                "\n10 - Прочитать карты");
+                "\n9 - Передать колоду");
 
         Scanner scanner = new Scanner(System.in);
         int a = scanner.nextInt();
@@ -68,21 +59,9 @@ public class Protocol {
         if (a == 9) {
             transferDeck();
         }
-        if (a == 10) {
-            readCards();
-        }
-
-
-//        generateDeck();
-//        shuffleCards();
-//        encryptNCards();
-//        transferDeck();
-//        transferNCards();
-//        decryptNCards();
-//        encryptAllDeck();
     }
 
-    public static void generateP() {
+    private static void generateP() {
         System.out.println("Генерация p - БПЧ");
         BigInteger p = Help.generatePrime();
         String sharedParams = "p:" + p;
@@ -90,7 +69,7 @@ public class Protocol {
         System.out.println("p - сгенерированно!");
     }
 
-    public static void generateKeys() {
+    private static void generateKeys() {
         System.out.println("Генерация пар ключей для Алисы, Боба и Кэрол");
 
         List<String> sharedParams = Help.readFromFile(SHARED_FILE);
@@ -142,26 +121,14 @@ public class Protocol {
         List<String> alicesPair = Help.readFromFile(ALICES_PAIR_FILE);
         BigInteger eA = new BigInteger(alicesPair.get(0).split(":")[1]);
         BigInteger p = new BigInteger(sharedParams.get(0).split(":")[1]);
-        List<List<String>> message = new ArrayList<>();
 
         for (int i = 1; i <= 52; i++) {
-            Help.convert(p, DECK_PATH + i + ".txt");
-        }
+            BigInteger s = readFileAsBytes(new File(DECK_PATH + "/" + i + ".txt"));
+            s = s.modPow(eA, p);
+            Files.delete(new File(DECK_PATH + "/" + i + ".txt").toPath());
+            writeBytesAsString(s, new File(DECK_PATH + "/" + i + ".txt"));
 
-
-        for (int i = 1; i <= 52; i++) {
-            message.add(Help.readCard(DECK_PATH + i + ".txt"));
         }
-        for (int i = 0; i < message.size(); i++) {
-            for (int j = 0; j < message.get(i).size(); j++) {
-                message.get(i).set(j, new BigInteger(message.get(i).get(j)).modPow(eA, p).toString());
-            }
-        }
-
-        for (int i = 1; i <= 52; i++) {
-            Help.writeCard(message.get(i - 1), DECK_PATH + i + ".txt");
-        }
-
     }
 
     public static void encryptNCards() throws IOException {
@@ -192,20 +159,12 @@ public class Protocol {
         String path = br.readLine().trim();
 
         for (int i = 0; i < numbers.size(); i++) {
-            List<List<String>> message = new ArrayList<>();
-            message.add(Help.readCard(BASE_PATH + path + "/" + numbers.get(i) + ".txt"));
-
-            for (int l = 0; l < message.size(); l++) {
-                for (int j = 0; j < message.get(l).size(); j++) {
-                    message.get(l).set(j, new BigInteger(message.get(l).get(j)).modPow(eA, p).toString());
-                }
-            }
-            for (int l = 0; l < message.size(); l++) {
-                Help.writeCard(message.get(l), BASE_PATH + path + "/" + (numbers.get(i)) + ".txt");
-            }
+            BigInteger s = readFileAsBytes(new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt"));
+            s = s.modPow(eA, p);
+            Files.delete(new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt").toPath());
+            writeBytesAsString(s, new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt"));
         }
     }
-
 
     public static void decryptNCards() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -235,14 +194,10 @@ public class Protocol {
         String path = br.readLine().trim();
 
         for (int i = 0; i < numbers.size(); i++) {
-//            List<String> crd = Help.readCard(BASE_PATH + path + "/" + numbers.get(i) + ".txt");
             BigInteger s = readFileAsBytes(new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt"));
             s = s.modPow(dA, p);
             Files.delete(new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt").toPath());
-            writeBytesAsString(s);
-//            Help.writeCard(crd, BASE_PATH + path + "/" + (numbers.get(i)) + ".txt");
-//            Help.dec(crd, BASE_PATH + path + "/" + (numbers.get(i)) + "_decrypted.txt");
-//            Files.delete(new File(BASE_PATH + path + "/" + (numbers.get(i)) + ".txt").toPath());
+            writeBytesAsString(s, new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt"));
         }
     }
 
@@ -251,22 +206,37 @@ public class Protocol {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String path = br.readLine().trim();
 
-        List<List<String>> cards = new ArrayList<>();
+//        List<List<String>> cards = new ArrayList<>();
 
-        for (int i = 1; i <= 52; i++) {
-            cards.add(Help.readCard(BASE_PATH + path + "/" + i + ".txt"));
+        List<byte[]> list = new ArrayList<>();
+        for (int i = 0; i < 52; i++) {
+            File file = new File(BASE_PATH + path + "/" + (i + 1) + ".txt");
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            list.add(bytes);
         }
-        Collections.shuffle(cards);
-
-        for (int i = 1; i <= 52; i++) {
-            Help.writeCard(cards.get(i - 1), BASE_PATH + path + "/" + i + ".txt");
+        Collections.shuffle(list);
+        for (int i = 0; i < 52; i++) {
+            File file = new File(BASE_PATH + path + "/" + (i + 1) + ".txt");
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file.getPath())) {
+                fileOutputStream.write(list.get(i));
+                fileOutputStream.close();
+            }
         }
+//        for (int i = 1; i <= 52; i++) {
+//            cards.add(Help.readCard(BASE_PATH + path + "/" + i + ".txt"));
+//        }
+//        Collections.shuffle(cards);
+//
+//        for (int i = 1; i <= 52; i++) {
+//            Help.writeCard(cards.get(i - 1), BASE_PATH + path + "/" + i + ".txt");
+//        }
     }
 
     private static void transferDeck() throws IOException {
         System.out.println("Введите от кого и кому:");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String from = br.readLine().trim();
+
         String to = br.readLine().trim();
         for (int i = 1; i <= 52; i++) {
             File file = new File(BASE_PATH + from + "/" + i + ".txt");
@@ -302,40 +272,22 @@ public class Protocol {
         }
     }
 
-    private static void readCards() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        Integer count;
-        System.out.println("Введите количество карт");
-        count = Integer.valueOf(br.readLine());
-        List<Integer> numbers = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            System.out.println("Введите номер карты " + (i + 1));
-            numbers.add(Integer.valueOf(br.readLine()));
-        }
-        System.out.println("Введите путь к колоде");
-        String path = br.readLine().trim();
-
-        for (int i = 0; i < numbers.size(); i++) {
-            File file = new File(BASE_PATH + path + "/" + numbers.get(i) + ".txt");
-            if (file.exists()) {
-                List<String> crd = Help.readCard(BASE_PATH + path + "/" + numbers.get(i) + ".txt");
-                Help.dec(crd, BASE_PATH + path + "/" + numbers.get(i) + ".txt");
-            }
-        }
-    }
-
-
     private static BigInteger readFileAsBytes(File file) throws IOException {
         byte[] bytes = Files.readAllBytes(file.toPath());
-        String result = "";
-
+        for (int i = 0; i < bytes.length; i++) {
+//            System.out.println(bytes[i]);
+        }
+        for (int i = 0; i < new BigInteger(bytes).toByteArray().length; i++) {
+            System.out.println(new BigInteger(bytes).toByteArray()[i]);
+        }
         return new BigInteger(bytes);
     }
 
-    private static void writeBytesAsString(BigInteger s) throws IOException {
+    private static void writeBytesAsString(BigInteger s, File file) throws IOException {
         byte[] a = s.toByteArray();
-        FileOutputStream fileOutputStream = new FileOutputStream("/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/cryptoProtocols/task4_2/files/b/1.txt");
-        fileOutputStream.write(a);
-        fileOutputStream.close();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file.getPath())) {
+            fileOutputStream.write(a);
+            fileOutputStream.close();
+        }
     }
 }
