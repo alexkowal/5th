@@ -8,15 +8,12 @@ import java.io.*;
 import java.util.Collections;
 import java.util.List;
 
+import static second.cryptoAnalysis.first.constants.KasiskiConstants.*;
+
 
 @Data
 @Slf4j
 class PermCypher {
-    private static final String TEXT_FILE_NAME = "text.txt";
-    private static final String KEY_FILE_NAME = "key.txt";
-    private static final String ENCRYPTED_FILE_NAME = "encrypted.txt";
-    private static final String DECRYPTED_FILE_NAME = "decrypted.txt";
-    private static final String FILE_PATH = "/Users/aleksandr/5 курс 1 семестр/Code/src/main/java/second/cryptoAnalysis/first/files/";
 
     public void generateKey() throws IOException {
         Long keyLength = readKeyLength();
